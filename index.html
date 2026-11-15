@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Алфавит эмоций и чувств</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<meta name="color-scheme" content="light dark">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#faf7f2; --card:#fff; --ink:#1f1d1a; --muted:#6f6a62; --line:#e8e1d6; --soft:#f2ede4;
+  --hot:#e5533d; --cold:#3f78d6; --base:#e9e3da; --zbase:#e3dccf; --bgA:rgba(250,247,242,.96); --note:#fff7e6; --noteLine:#f1dfb5; --dotOff:#e9e3da; --chipOn:#1f1d1a; --chipOnText:#fff;
+  --joy:#e09a12; --sad:#3b7dd8; --anger:#d64545; --fear:#7b5bc4; --int:#1e9e8f; --disgust:#6b8e23; --shame:#b8673e; --love:#e0607e;
+}
+body.dark{--bg:#17181b;--card:#222428;--ink:#ecebe8;--muted:#9c9a95;--line:#33363c;--soft:#2b2e33;--base:#3a3d43;--zbase:#41454c;--bgA:rgba(23,24,27,.94);--note:#2c2a22;--noteLine:#4a4430;--dotOff:#3a3d43;--chipOn:#ecebe8;--chipOnText:#17181b}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:Manrope,system-ui,sans-serif;line-height:1.5;-webkit-font-smoothing:antialiased}
+.wrap{max-width:980px;margin:0 auto;padding:0 16px}
+header.hero{padding:36px 0 18px}
+.hero h1{font-size:clamp(28px,6vw,44px);line-height:1.1;margin:0 0 10px;font-weight:800;letter-spacing:-.02em}
+.hero p{margin:0;color:var(--muted);font-size:16px;max-width:640px}
+nav.toc{display:flex;gap:8px;flex-wrap:wrap;margin:18px 0 6px}
+nav.toc a{text-decoration:none;color:var(--ink);background:var(--card);border:1px solid var(--line);border-radius:999px;padding:7px 14px;font-size:14px;font-weight:600}
+section{padding:26px 0}
+h2{font-size:24px;margin:0 0 6px;font-weight:800;letter-spacing:-.01em}
+.sub{color:var(--muted);margin:0 0 18px;font-size:15px}
+
+/* difference */
+.diff{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px}
+.dcard{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px}
+.dcard .ico{font-size:26px}
+.dcard h3{margin:4px 0 2px;font-size:19px}
+.dcard .meta{font-size:13px;color:var(--muted);margin-bottom:8px}
+.dcard ul{margin:0;padding-left:18px;font-size:14.5px}
+.dcard li{margin:3px 0}
+.dcard .ex{margin-top:10px;background:var(--soft);border-radius:10px;padding:8px 10px;font-size:14px}
+.metaphor{margin-top:12px;background:var(--note);border:1px solid var(--noteLine);border-radius:14px;padding:12px 14px;font-size:15px}
+
+/* how to use */
+.steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px;margin-top:12px}
+.step{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px 14px;font-size:14.5px}
+.step b{display:block;font-size:15px;margin-bottom:2px}
+.num{display:inline-flex;width:24px;height:24px;border-radius:50%;background:var(--chipOn);color:var(--chipOnText);align-items:center;justify-content:center;font-size:13px;font-weight:700;margin-bottom:6px}
+
+/* legend */
+.legend{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px}
+.lg{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px 14px;font-size:14px}
+.lg h4{margin:0 0 8px;font-size:15px}
+.row{display:flex;align-items:center;gap:8px;margin:5px 0}
+.sw{width:14px;height:14px;border-radius:4px;flex:none}
+.dots{display:inline-flex;gap:3px;vertical-align:middle}
+.dots i{width:9px;height:9px;border-radius:50%;background:var(--dotOff);display:block}
+
+/* pairs */
+.axes{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:10px}
+.pair{display:flex;align-items:center;gap:10px;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:10px 12px}
+.pair .side{flex:1;text-align:center;font-weight:700;font-size:16px;padding:8px 6px;border-radius:10px;cursor:pointer}
+.pair .vs{font-size:18px;color:var(--muted);flex:none}
+.pair .note{font-size:12.5px;color:var(--muted);text-align:center;margin-top:4px}
+.pairwrap{display:flex;flex-direction:column}
+h3.mini{font-size:16px;margin:20px 0 10px}
+
+/* ladders */
+.ladders{display:flex;flex-direction:column;gap:12px}
+.ladder{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px 14px}
+.ladder .lh{display:flex;align-items:center;gap:8px;font-weight:800;margin-bottom:10px}
+.steps5{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
+.lvl{border-radius:10px;padding:6px 6px 8px;min-height:64px}
+.lvl .ln{font-size:11px;font-weight:700;opacity:.8;margin-bottom:4px}
+.lvl span{display:inline-block;font-size:12.5px;font-weight:600;margin:1px 3px 1px 0;cursor:pointer;text-decoration:underline;text-decoration-color:rgba(0,0,0,.15);text-underline-offset:2px}
+@media (max-width:560px){.steps5{grid-template-columns:1fr}.lvl{min-height:0;display:flex;gap:8px;align-items:baseline;flex-wrap:wrap}.lvl .ln{margin:0;min-width:86px}}
+
+/* filters */
+.controls{position:sticky;top:0;z-index:5;background:var(--bgA);backdrop-filter:blur(6px);padding:10px 0 8px;border-bottom:1px solid var(--line)}
+.search{width:100%;font:inherit;font-size:16px;padding:11px 14px;border-radius:12px;border:1px solid var(--line);background:var(--card);color:var(--ink);outline:none}
+.search:focus{border-color:#bfb4a3}
+.chips{display:flex;gap:6px;overflow-x:auto;padding:8px 0 2px;scrollbar-width:none}
+.chips::-webkit-scrollbar{display:none}
+.chip{flex:none;border:1px solid var(--line);background:var(--card);border-radius:999px;padding:6px 12px;font:inherit;font-size:13.5px;font-weight:600;color:var(--ink);cursor:pointer;display:inline-flex;align-items:center;gap:6px}
+.chip.on{background:var(--chipOn);color:var(--chipOnText);border-color:var(--chipOn)}
+.chip .sw{width:10px;height:10px;border-radius:50%}
+.flabel{font-size:12px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.04em;margin-top:6px}
+.abc{display:flex;gap:2px;overflow-x:auto;padding-top:8px;scrollbar-width:none}
+.abc::-webkit-scrollbar{display:none}
+.abc button{flex:none;width:28px;height:28px;border:0;border-radius:8px;background:transparent;font:inherit;font-weight:700;font-size:14px;color:var(--ink);cursor:pointer}
+.abc button:disabled{color:var(--line);cursor:default}
+.abc button:not(:disabled):hover{background:var(--soft)}
+.count{font-size:13px;color:var(--muted);margin:12px 0 0}
+
+/* cards */
+.letter{font-size:30px;font-weight:800;margin:22px 0 8px;color:var(--muted);scroll-margin-top:120px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px 14px 12px;display:grid;grid-template-columns:1fr 64px;gap:10px;position:relative;overflow:hidden;scroll-margin-top:120px;transition:box-shadow .3s}
+.card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:5px;background:var(--fc)}
+.card.flash{box-shadow:0 0 0 3px var(--fc)}
+.card h3{margin:0;font-size:19px;font-weight:800;line-height:1.2}
+.tags{display:flex;gap:6px;flex-wrap:wrap;margin:6px 0 8px}
+.tag{font-size:11.5px;font-weight:700;padding:2px 8px;border-radius:999px;background:var(--soft);color:var(--ink)}
+.tag.fam{background:var(--fcl);color:var(--fc)}
+.deg{display:flex;align-items:center;gap:8px;font-size:12.5px;color:var(--muted);margin-bottom:8px}
+.desc{font-size:14.5px;margin:0 0 8px}
+.body{font-size:13.5px;background:var(--soft);border-radius:10px;padding:7px 9px;margin:0 0 8px}
+.body b{font-weight:700}
+.opp{font-size:13.5px;color:var(--muted)}
+.opp a{color:var(--ink);font-weight:700;cursor:pointer;text-decoration:none;border-bottom:2px solid var(--oc)}
+.fig{display:flex;flex-direction:column;align-items:center;gap:2px}
+.fig small{font-size:10px;color:var(--muted);text-align:center;line-height:1.2}
+.empty{padding:40px 0;text-align:center;color:var(--muted)}
+
+/* body explorer */
+.explorer{display:grid;grid-template-columns:200px 1fr;gap:18px;align-items:start}
+@media (max-width:620px){.explorer{grid-template-columns:1fr}}
+.bigbody{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:12px;display:flex;justify-content:center}
+.bigbody svg .z{cursor:pointer;transition:fill .2s}
+.bigbody svg .z:hover{fill:var(--soft)!important}
+.bigbody svg .z.sel{fill:#f2b8a8!important}
+.zonebox{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px}
+.zonebox h4{margin:0 0 6px;font-size:17px}
+.zlist{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.zlist span{font-size:13px;font-weight:600;padding:4px 10px;border-radius:999px;cursor:pointer;border:1px solid transparent}
+footer{padding:30px 0 60px;color:var(--muted);font-size:13px;border-top:1px solid var(--line);margin-top:30px}
+footer a{color:var(--muted)}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header class="hero">
+  <h1>Алфавит эмоций и чувств</h1>
+  <p>86 состояний от «Азарта» до «Ярости»: что это, насколько сильно, где обычно ощущается в теле и что противоположно. Нажимай на слова - всё связано.</p>
+  <nav class="toc">
+    <a href="#raznica">Эмоция или чувство?</a>
+    <a href="#telo">Ищу по телу</a>
+    <a href="#pary">Противоположности</a>
+    <a href="#lestnicy">Лестницы силы</a>
+    <a href="#alfavit">Алфавит</a>
+  </nav>
+</header>
+
+<section id="raznica">
+  <h2>Эмоция, чувство, состояние - в чём разница</h2>
+  <p class="sub">Простое правило: эмоция - вспышка, чувство - отношение, состояние - фон.</p>
+  <div class="diff">
+    <div class="dcard">
+      <div class="ico">⚡</div><h3>Эмоция</h3>
+      <div class="meta">секунды - минуты</div>
+      <ul>
+        <li>Быстрая реакция на <b>ситуацию прямо сейчас</b></li>
+        <li>Сильно ощущается телом: сердце, дыхание, жар</li>
+        <li>Возникает сама, её трудно не испытать</li>
+        <li>Видна на лице</li>
+      </ul>
+      <div class="ex">Резко хлопнула дверь → <b>испуг</b>. Через минуту прошло.</div>
+    </div>
+    <div class="dcard">
+      <div class="ico">❤️</div><h3>Чувство</h3>
+      <div class="meta">дни - годы</div>
+      <ul>
+        <li>Устойчивое <b>отношение к кому-то или чему-то</b></li>
+        <li>Складывается из многих эмоций и опыта</li>
+        <li>Его осознаёшь и можешь назвать</li>
+        <li>Внутри одного чувства бывают разные эмоции</li>
+      </ul>
+      <div class="ex"><b>Любовь</b> к ребёнку - чувство. Внутри неё: радость, когда он смеётся, страх, когда болеет, злость, когда шалит.</div>
+    </div>
+    <div class="dcard">
+      <div class="ico">🌫️</div><h3>Состояние</h3>
+      <div class="meta">часы - недели</div>
+      <ul>
+        <li>Общий <b>фон, настроение</b></li>
+        <li>Часто без конкретной причины или адресата</li>
+        <li>Окрашивает всё, что происходит</li>
+      </ul>
+      <div class="ex"><b>Тревога</b> весь день «ни о чём», <b>апатия</b>, <b>спокойствие</b>.</div>
+    </div>
+  </div>
+  <div class="metaphor">🌦 <b>Метафора:</b> эмоция - это погода (дождь пошёл и кончился), чувство - климат (в этих краях тепло), состояние - сезон (сейчас осень, всё серое). Граница между ними условная: одно слово может быть и тем, и другим - например, «страх» перед собакой (эмоция) и «страх» высоты всю жизнь (почти чувство).</div>
+
+  <h3 class="mini">Как пользоваться, если «что-то чувствую, но не понимаю что»</h3>
+  <div class="steps">
+    <div class="step"><span class="num">1</span><b>Замри и заметь тело</b>Где что-то происходит? Ком в горле, жар в лице, тяжесть в груди, холод в животе?</div>
+    <div class="step"><span class="num">2</span><b>Найди место</b>Нажми эту часть тела в разделе «Ищу по телу» - увидишь, какие эмоции там обычно живут.</div>
+    <div class="step"><span class="num">3</span><b>Назови и оцени силу</b>Подбери слово и степень от 1 до 5. Названная эмоция уже наполовину под контролем.</div>
+  </div>
+</section>
+
+<section id="legenda">
+  <h2>Как читать карточки</h2>
+  <div class="legend">
+    <div class="lg"><h4>Цвет = семья эмоций</h4><div id="famLegend"></div></div>
+    <div class="lg">
+      <h4>Сила (степень) от 1 до 5</h4>
+      <div id="degLegend"></div>
+    </div>
+    <div class="lg">
+      <h4>Фигурка тела</h4>
+      <div class="row"><span class="sw" style="background:var(--hot)"></span><span><b>Красное</b> - ощущения усиливаются: жар, энергия, напряжение, сдавленность, ком</span></div>
+      <div class="row"><span class="sw" style="background:var(--cold)"></span><span><b>Синее</b> - ослабевают: холод, тяжесть, вялость, пустота, онемение</span></div>
+      <div class="row"><span class="sw" style="background:var(--zbase)"></span><span>Серое - обычно без заметных изменений</span></div>
+      <div class="row" style="margin-top:8px;font-size:12.5px;color:var(--muted)">У каждого человека карта немного своя - это типичная картина, а не правило.</div>
+    </div>
+  </div>
+</section>
+
+<section id="telo">
+  <h2>Ищу по телу</h2>
+  <p class="sub">Нажми на часть тела - увидишь эмоции, которые там чаще всего ощущаются.</p>
+  <div class="explorer">
+    <div class="bigbody" id="bigBody"></div>
+    <div class="zonebox" id="zoneBox"><h4>Выбери часть тела</h4><div style="color:var(--muted);font-size:14px">Голова и лицо, горло, грудь, живот, руки или ноги.</div></div>
+  </div>
+</section>
+
+<section id="pary">
+  <h2>Противоположные эмоции и чувства</h2>
+  <p class="sub">Четыре главные оси из «колеса эмоций» психолога Роберта Плутчика - и пары, понятные в быту.</p>
+  <div class="axes" id="axes"></div>
+  <h3 class="mini">Бытовые пары</h3>
+  <div class="axes" id="pairs"></div>
+  <div class="metaphor" style="margin-top:14px">💡 Противоположные эмоции не всегда исключают друг друга. К одному человеку можно одновременно чувствовать любовь и злость - это нормально и называется <b>амбивалентностью</b>.</div>
+</section>
+
+<section id="lestnicy">
+  <h2>Лестницы силы</h2>
+  <p class="sub">Одна семья эмоций - разная громкость. Раздражение не равно ярости, хотя это одна «семья».</p>
+  <div class="ladders" id="ladders"></div>
+</section>
+
+<section id="alfavit" style="padding-bottom:0">
+  <h2>Алфавит</h2>
+</section>
+</div>
+
+<div class="wrap">
+    <div class="flabel">Семья</div>
+    <div class="chips" id="famChips"></div>
+    <div class="flabel">Тип</div>
+    <div class="chips" id="typeChips"></div>
+</div>
+<div class="controls" id="controls">
+  <div class="wrap">
+    <input class="search" id="q" type="search" placeholder="Найти: «ком в горле», «жар», «обида»…" autocomplete="off">
+    <div class="abc" id="abc"></div>
+  </div>
+</div>
+
+<div class="wrap">
+  <p class="count" id="count"></p>
+  <div id="list"></div>
+  <footer>
+    Основано на: «колесо эмоций» Р. Плутчика (противоположности, семьи); исследование L. Nummenmaa и соавт. «Bodily maps of emotions», PNAS, 2014 (карты тела); разделение эмоций и чувств - традиция отечественной психологии (А. Н. Леонтьев, Е. П. Ильин). Классификация упрощена для понятности: границы между семьями и типами условны, а ощущения у разных людей отличаются. Если тяжёлые состояния (тревога, уныние, отчаяние) держатся неделями - это повод поговорить со специалистом.
+  </footer>
+</div>
+
+<script>
+const tg=(window.Telegram&&Telegram.WebApp&&Telegram.WebApp.initData!==undefined)?Telegram.WebApp:null;
+const inTg=!!(tg&&tg.platform&&tg.platform!=="unknown");
+function applyTheme(){
+  let dark;
+  if(inTg){
+    dark=tg.colorScheme==="dark";
+    const p=tg.themeParams||{},r=document.body.style;
+    if(p.bg_color)r.setProperty("--bg",p.bg_color);
+    if(p.section_bg_color||p.secondary_bg_color)r.setProperty("--card",p.section_bg_color||p.secondary_bg_color);
+    if(p.text_color)r.setProperty("--ink",p.text_color);
+    if(p.hint_color)r.setProperty("--muted",p.hint_color);
+    if(p.bg_color){const h=p.bg_color.replace("#","");if(h.length===6){const n=parseInt(h,16);r.setProperty("--bgA",`rgba(${n>>16},${(n>>8)&255},${n&255},.95)`)}}
+    try{tg.setHeaderColor(p.bg_color||(dark?"#17181b":"#faf7f2"));tg.setBackgroundColor(p.bg_color||(dark?"#17181b":"#faf7f2"))}catch(e){}
+  }else{
+    dark=window.matchMedia&&matchMedia("(prefers-color-scheme: dark)").matches;
+  }
+  document.body.classList.toggle("dark",!!dark);
+}
+applyTheme();
+if(inTg){tg.ready();tg.expand();tg.onEvent("themeChanged",applyTheme)}
+else if(window.matchMedia){matchMedia("(prefers-color-scheme: dark)").addEventListener("change",applyTheme)}
+const haptic=()=>{try{inTg&&tg.HapticFeedback.selectionChanged()}catch(e){}};
+const FAM={
+  joy:{n:"Радость и покой",c:"var(--joy)",h:"#e09a12"},
+  love:{n:"Любовь и близость",c:"var(--love)",h:"#e0607e"},
+  int:{n:"Интерес и удивление",c:"var(--int)",h:"#1e9e8f"},
+  sad:{n:"Грусть",c:"var(--sad)",h:"#3b7dd8"},
+  fear:{n:"Страх",c:"var(--fear)",h:"#7b5bc4"},
+  anger:{n:"Гнев",c:"var(--anger)",h:"#d64545"},
+  disgust:{n:"Отвращение",c:"var(--disgust)",h:"#6b8e23"},
+  shame:{n:"Стыд и вина",c:"var(--shame)",h:"#b8673e"}
+};
+const TYPE={e:{n:"Эмоция",i:"⚡"},f:{n:"Чувство",i:"❤️"},s:{n:"Состояние",i:"🌫️"}};
+const DEG=["","едва заметно","слабо","средне","сильно","предельно"];
+const ZN={h:"Голова и лицо",t:"Горло и шея",c:"Грудь",b:"Живот",a:"Руки и плечи",l:"Ноги"};
+
+// [название, семья, тип, сила, противоположность, описание, тело, зоны]
+const D=[
+["Азарт","int","e",4,"Скука","Захваченность игрой или делом: хочется рискнуть и победить.","Жар в груди и лице, частый пульс, руки «чешутся» действовать.","h+ c+ a+"],
+["Антипатия","disgust","f",2,"Симпатия","Устойчивая неприязнь к человеку, часто без ясной причины.","Лицо напрягается, губы сжимаются, тело чуть отстраняется, холодок в животе.","h+ b-"],
+["Апатия","sad","s",2,"Энтузиазм","Ничего не хочется, всё безразлично, нет сил и интереса.","Вялость во всём теле, тяжёлые руки и ноги, пустота в груди.","h- t- c- b- a- l-"],
+["Беспокойство","fear","e",1,"Предвкушение","Лёгкая тревожная мысль: «а вдруг что-то пойдёт не так».","Неспокойно в животе, дыхание поверхностное, руки ищут занятие.","c+ b+ a+"],
+["Безмятежность","joy","s",1,"Тревога","Тихое спокойствие, ничего не тревожит.","Плечи опущены, дыхание ровное и глубокое, по телу мягкое тепло.","c+ b+"],
+["Бешенство","anger","e",5,"Безмятежность","Неуправляемая злость, почти теряешь контроль над собой.","Жар в голове и лице, стучит в висках, сжаты челюсти и кулаки, дрожь.","h+ t+ c+ a+"],
+["Благодарность","love","f",3,"Обида","Тёплое чувство к тому, кто сделал тебе добро.","Тепло и расширение в груди, лицо смягчается, могут увлажниться глаза.","h+ c+"],
+["Блаженство","joy","e",5,"Отчаяние","Полное, глубокое удовольствие: «лучше и быть не может».","Тепло разливается по всему телу, мышцы расслаблены, лёгкость.","h+ t+ c+ b+ a+ l+"],
+["Брезгливость","disgust","e",3,"Умиление","Желание отстраниться от чего-то «грязного», неприятного.","Подкатывает к горлу, морщится нос, мутит в животе, руки отдёргиваются.","h+ t+ b+ a+"],
+["Веселье","joy","e",3,"Хандра","Лёгкое игривое настроение, хочется смеяться и шутить.","Смех «из живота», лёгкость в груди, энергия в руках и ногах.","h+ c+ b+ a+ l+"],
+["Вдохновение","int","e",4,"Опустошённость","Прилив идей и сил, хочется творить.","Приподнятость в груди, ясность в голове, мурашки по коже.","h+ c+ a+"],
+["Вина","shame","f",3,"Гордость","Ощущение «я поступил плохо» и желание исправить.","Сдавленность в груди, ком в горле, плечи и руки опускаются.","t+ c+ a-"],
+["Возмущение","anger","e",3,"Благодарность","Злость на несправедливость: «так нельзя!»","Жар в груди и лице, резкий вдох, напряжение в челюсти и руках.","h+ c+ a+"],
+["Восторг","joy","e",5,"Разочарование","Очень сильная радость: переполняет, хочется кричать «да!»","Распирает грудь, мурашки, хочется прыгать и обнимать.","h+ t+ c+ b+ a+ l+"],
+["Восхищение","int","e",4,"Презрение","Радость от того, как прекрасен кто-то или что-то.","Расширение в груди, широко открытые глаза, дыхание замирает на вдохе.","h+ c+"],
+["Гнев","anger","e",4,"Страх","Сильная злость на препятствие или обиду, энергия «нападать».","Жар в голове, груди и руках, сжатые кулаки, частое сердцебиение.","h+ t+ c+ a+"],
+["Гордость","joy","f",3,"Стыд","Удовольствие от своих (или близких) достижений.","Грудь расправляется, голова поднимается, тепло в груди.","h+ c+"],
+["Горе","sad","e",5,"Ликование","Самая глубокая печаль от тяжёлой потери.","Боль и тяжесть в груди, ком в горле, слёзы, слабость в руках и ногах.","h+ t+ c+ a- l-"],
+["Грусть","sad","e",2,"Радость","Лёгкая печаль: чего-то жаль или не хватает.","Тяжесть в груди, влажнеют глаза, руки вялые, уголки рта вниз.","h+ c+ a- l-"],
+["Доверие","love","f",2,"Подозрительность","Чувство «с ним я в безопасности, можно расслабиться».","Расслаблены живот и плечи, открытая поза, спокойное дыхание.","c+ b+"],
+["Досада","anger","e",1,"Удовлетворение","Лёгкая злость на мелкую неудачу: «эх, ну как так».","Короткое напряжение в лице и челюсти, вздох.","h+"],
+["Жалость","sad","f",2,"Злорадство","Сострадание с оттенком «сверху»: «бедный…»","Сжатие в груди, мягкость в лице, ком в горле.","t+ c+"],
+["Зависть","anger","f",3,"Восхищение","Неприятное чувство, когда у другого есть то, чего хочешь сам.","Жжение в груди и животе, напряжённое лицо, сжатые губы.","h+ c+ b+"],
+["Замешательство","int","e",2,"Уверенность","Не понимаешь, что происходит и как себя вести.","«Туман» в голове, тело замирает, жар в лице.","h+ a-"],
+["Злорадство","anger","e",2,"Сочувствие","Радость от чужой неудачи.","Кривая усмешка, лёгкое тепло в груди, напряжение в лице.","h+ c+"],
+["Злость","anger","e",3,"Нежность","Ясное недовольство: хочется ответить, оттолкнуть.","Жар в лице и руках, сжата челюсть, кулаки, напряжены плечи.","h+ c+ a+"],
+["Изумление","int","e",4,"Апатия","Сильное удивление: «не может быть!»","Брови вверх, рот открыт, дыхание замирает, тело застывает.","h+ c+"],
+["Интерес","int","e",2,"Скука","Хочется узнать, рассмотреть, разобраться.","Голова «включается», тело подаётся вперёд, внимание собрано.","h+ c+"],
+["Испуг","fear","e",4,"Облегчение","Внезапный страх от неожиданной угрозы.","Вздрагиваешь, «ёкает» сердце, холод в животе, ноги напрягаются.","c+ b- l+"],
+["Кураж","joy","e",4,"Страх","Смелый подъём: «а давай, рискнём!»","Энергия в груди и руках, твёрдые ноги, тепло в теле.","c+ a+ l+"],
+["Ликование","joy","e",5,"Горе","Бурная радость, которой хочется делиться со всеми.","Энергия во всём теле, жар в груди, хочется двигаться и кричать.","h+ t+ c+ b+ a+ l+"],
+["Любовь","love","f",4,"Ненависть","Глубокая привязанность и забота, желание быть рядом.","Тепло в груди, животе и лице, хочется обнять.","h+ c+ b+ a+"],
+["Любопытство","int","e",2,"Апатия","Лёгкий интерес к новому: «а что там?»","Оживление в голове, глаза ищут, тело тянется вперёд.","h+"],
+["Меланхолия","sad","s",2,"Веселье","Тихая затяжная грусть, задумчивость.","Лёгкая тяжесть в груди, замедленность, вялые руки и ноги.","c+ a- l-"],
+["Надежда","joy","f",2,"Отчаяние","Ожидание, что всё будет хорошо.","Лёгкость и приподнятость в груди, глубокий вдох.","c+"],
+["Негодование","anger","e",4,"Благодарность","Сильное возмущение чужой подлостью или несправедливостью.","Жар в груди и лице, напряжена шея, стиснуты зубы.","h+ t+ c+"],
+["Нежность","love","f",2,"Злость","Мягкое бережное тепло к кому-то.","Мягкое тепло в груди, расслаблены лицо и руки, хочется погладить.","c+ a+"],
+["Неловкость","shame","e",1,"Уверенность","Чувствуешь себя «не в своей тарелке».","Жар в щеках, взгляд уходит в сторону, руки некуда деть.","h+ a+"],
+["Ненависть","anger","f",5,"Любовь","Стойкая сильнейшая неприязнь, желание зла.","Жгучее или ледяное напряжение в груди, сжатые челюсти, тяжесть в животе.","h+ c+ b+"],
+["Нетерпение","int","e",2,"Спокойствие","Трудно ждать, хочется, чтобы «уже».","Руки и ноги не находят места, напряжение в груди.","c+ a+ l+"],
+["Ностальгия","sad","f",2,"Предвкушение","Светлая грусть по прошлому.","Тёплая тяжесть в груди, ком в горле, мягкая улыбка.","t+ c+"],
+["Обида","sad","f",3,"Благодарность","Боль от того, что с тобой поступили несправедливо.","Ком в горле, сжатие в груди, подступают слёзы, губы дрожат.","h+ t+ c+"],
+["Обожание","love","f",5,"Презрение","Восторженная любовь: человек кажется идеальным.","Жар в груди, «бабочки» в животе, сияющие глаза.","h+ c+ b+"],
+["Облегчение","joy","e",3,"Испуг","Напряжение отпустило: «фух, обошлось».","Глубокий выдох, расслабляются плечи и живот, «камень с души».","c+ b+"],
+["Одиночество","sad","f",3,"Привязанность","Ты один, и тебя никто не понимает.","Пустота и холод в груди, тяжесть в теле.","c- b- a- l-"],
+["Опустошённость","sad","s",4,"Эйфория","Внутри будто ничего не осталось - ни сил, ни чувств.","Пустота в груди и животе, онемение, тяжёлые руки и ноги.","c- b- a- l-"],
+["Отвращение","disgust","e",4,"Симпатия","Сильное желание отвергнуть: «фу, убери от меня».","Тошнота в горле и животе, сморщенное лицо, тело отворачивается.","h+ t+ b+"],
+["Отчаяние","sad","e",5,"Надежда","Кажется, что выхода нет и ничего не изменится.","Сдавленность в груди, тяжесть во всём теле, бессилие в руках.","c+ b- a- l-"],
+["Оцепенение","fear","s",5,"Кураж","Страх настолько сильный, что тело «замерзает».","Тело застывает, холод и онемение в руках и ногах, дыхание задерживается.","c+ a- l-"],
+["Паника","fear","e",5,"Безмятежность","Неудержимый страх: мысли скачут, хочется бежать.","Сердце колотится, не хватает воздуха, дрожь в ногах, то жар, то холод.","h+ t+ c+ l+"],
+["Печаль","sad","e",3,"Радость","Глубже грусти: что-то важное ушло или не сбылось.","Тяжесть в груди, слёзы, опущенные плечи, медленные движения.","h+ c+ a- l-"],
+["Подозрительность","fear","f",2,"Доверие","Ждёшь подвоха, не веришь словам.","Напряжены плечи и шея, прищур, настороженность в животе.","h+ t+ b+"],
+["Предвкушение","int","e",3,"Беспокойство","Приятное ожидание хорошего.","«Бабочки» в животе, покалывание в груди, нетерпение в ногах.","c+ b+ l+"],
+["Презрение","disgust","f",3,"Уважение","Ощущение «я выше, он ничтожен».","Усмешка одним уголком рта, подбородок вверх, холодок в груди.","h+ c-"],
+["Привязанность","love","f",3,"Одиночество","Человек или место стали важными, тянет к ним.","Тепло в груди, тоска в разлуке, хочется быть ближе.","c+"],
+["Радость","joy","e",3,"Грусть","Хорошо от того, что случилось приятное.","Тепло и лёгкость в груди и лице, улыбка, энергия во всём теле.","h+ t+ c+ b+ a+ l+"],
+["Раздражение","anger","e",2,"Спокойствие","Злость «на маленьком огне»: всё начинает бесить.","Напряжены плечи и челюсть, лёгкий жар, резкие движения.","h+ c+ a+"],
+["Разочарование","sad","e",3,"Восторг","Ожидал хорошего, а вышло не так.","Тяжёлый выдох, опускаются плечи, тяжесть в груди.","c+ a-"],
+["Раскаяние","shame","f",4,"Гордость","Глубокое сожаление о своём поступке, хочется исправить.","Тяжесть в груди, ком в горле, опущенная голова.","t+ c+ a-"],
+["Растерянность","int","e",2,"Уверенность","Не знаешь, что делать и куда идти.","Пусто в голове, тело замирает, руки суетятся.","h- a+"],
+["Ревность","fear","f",4,"Доверие","Страх потерять близкого из-за соперника, смешанный со злостью.","Жжение в груди, сжатие в животе, жар в лице.","h+ c+ b+"],
+["Симпатия","love","f",1,"Антипатия","Человек приятен, хочется общаться.","Лёгкое тепло в груди, улыбка, тело поворачивается к человеку.","h+ c+"],
+["Скука","int","s",1,"Интерес","Ничего не цепляет, время тянется.","Вялость, тяжесть в голове, зевота, хочется ёрзать.","h- a- l-"],
+["Смущение","shame","e",2,"Уверенность","Неловко от внимания к себе.","Краснеют щёки и уши, взгляд вниз, улыбка сквозь неловкость.","h+"],
+["Сочувствие","love","f",2,"Злорадство","Чувствуешь боль другого и хочешь помочь.","Мягкое сжатие в груди, тепло, тянет подойти.","c+"],
+["Спокойствие","joy","s",1,"Тревога","Ровное состояние: всё в порядке.","Ровное дыхание, расслабленные мышцы, приятная тяжесть тела.","c+ b+"],
+["Страх","fear","e",3,"Гнев","Ощущение опасности, желание защититься или убежать.","Сердце бьётся чаще, холод в животе, напряжение в груди, «ватные» или напряжённые ноги.","c+ b- l+"],
+["Стыд","shame","e",4,"Гордость","«Я плохой» - хочется спрятаться от чужих глаз.","Жар в лице и шее, сжатие в животе, хочется сжаться и исчезнуть.","h+ t+ b+ a-"],
+["Счастье","joy","s",4,"Горе","Глубокое ощущение, что жизнь хороша.","Тепло во всём теле, лёгкость, расслабленность.","h+ t+ c+ b+ a+ l+"],
+["Тоска","sad","f",3,"Радость","Ноющая грусть по кому-то или чему-то недостижимому.","Ноет в груди, ком в горле, пустота внутри.","t+ c+ b-"],
+["Торжество","joy","e",4,"Унижение","Радость победы.","Расправленная грудь, жар, руки сами поднимаются вверх.","h+ c+ a+"],
+["Тревога","fear","s",2,"Спокойствие","Смутное ожидание беды, непонятно чего именно.","Сжатие в груди и животе, поверхностное дыхание, трудно усидеть.","c+ b+ l+"],
+["Уважение","love","f",2,"Презрение","Признаёшь ценность и достоинство другого.","Спокойная собранность, ровная осанка, внимательный взгляд.","c+"],
+["Уверенность","joy","s",3,"Растерянность","Ощущение «я справлюсь».","Устойчивые ноги, расправленные плечи, ровное дыхание.","c+ l+"],
+["Удивление","int","e",3,"Предвкушение","Реакция на неожиданное: «ого!»","Короткое замирание, резкий вдох, брови вверх, глаза шире.","h+ c+"],
+["Удовлетворение","joy","e",2,"Разочарование","Спокойная радость: получил то, что хотел.","Расслабление, тепло в животе и груди, довольный выдох.","c+ b+"],
+["Ужас","fear","e",5,"Безмятежность","Предельный страх перед чем-то жутким.","Холод по всему телу, мурашки, сердце колотится, тело цепенеет.","h+ c+ b- a- l-"],
+["Умиление","love","e",2,"Брезгливость","Растроганность от милого: ребёнка, животного.","Тепло и мягкость в груди, улыбка, иногда слёзы.","h+ c+"],
+["Унижение","shame","e",5,"Торжество","Тебя публично «опустили», растоптали достоинство.","Жар в лице, сжимается всё тело, хочется провалиться сквозь землю.","h+ c+ b+ a- l-"],
+["Уныние","sad","s",3,"Энтузиазм","Затяжная потеря сил и веры: «руки опускаются».","Тяжесть во всём теле, нет сил в руках и ногах.","h- c- b- a- l-"],
+["Фрустрация","anger","e",3,"Удовлетворение","Злость и бессилие, когда что-то мешает получить желаемое.","Напряжение в груди и плечах, сжатые кулаки, тяжёлый выдох.","c+ a+"],
+["Хандра","sad","s",2,"Веселье","Скучное унылое настроение «ни то ни сё».","Вялость, тяжесть в голове и теле.","h- a- l-"],
+["Шок","int","e",5,"Спокойствие","Потрясение: мозг не успевает понять, что случилось.","Оцепенение, звон в голове, «ватные» ноги, холод.","h+ c+ a- l-"],
+["Эйфория","joy","s",5,"Опустошённость","Бурное ощущение счастья и всемогущества.","Энергия и жар во всём теле, лёгкость, мурашки.","h+ t+ c+ b+ a+ l+"],
+["Энтузиазм","int","e",4,"Апатия","Горишь делом, хочется действовать.","Энергия в груди, руках и ногах, ясная голова.","h+ c+ a+ l+"],
+["Ярость","anger","e",5,"Безмятежность","Предельный гнев, взрыв.","Жар в голове и руках, стиснутые зубы, дрожь, пульсирует в висках.","h+ t+ c+ a+"]
+].map(r=>{const z={};r[7].split(" ").forEach(s=>{z[s[0]]=s[1]});return {name:r[0],fam:r[1],type:r[2],deg:r[3],opp:r[4],desc:r[5],body:r[6],z}});
+const BY={};D.forEach(e=>BY[e.name]=e);
+
+const HOT="#e5533d",COLD="#3f78d6",BASE="var(--zbase)";
+function bodySVG(z,w,interactive){
+  const f=k=>interactive?BASE:(z[k]==="+"?HOT:z[k]==="-"?COLD:BASE);
+  const o=k=>interactive?1:(z[k]?0.9:1);
+  const cls=k=>interactive?`class="z" data-z="${k}"`:"";
+  return `<svg viewBox="0 0 100 200" width="${w}" height="${w*2}" aria-hidden="true">
+  <g style="stroke:var(--card)" stroke-width="1.5">
+  <path ${cls("a")} style="fill:${f("a")};fill-opacity:${o("a")}" d="M27 50 Q18 52 16 62 L11 104 Q10 110 15 111 Q20 112 21 106 L27 70 Z"/>
+  <path ${cls("a")} style="fill:${f("a")};fill-opacity:${o("a")}" d="M73 50 Q82 52 84 62 L89 104 Q90 110 85 111 Q80 112 79 106 L73 70 Z"/>
+  <path ${cls("l")} style="fill:${f("l")};fill-opacity:${o("l")}" d="M33 110 L49 110 L47 186 Q47 192 41 192 Q35 192 35 186 Z"/>
+  <path ${cls("l")} style="fill:${f("l")};fill-opacity:${o("l")}" d="M51 110 L67 110 L65 186 Q65 192 59 192 Q53 192 53 186 Z"/>
+  <path ${cls("b")} style="fill:${f("b")};fill-opacity:${o("b")}" d="M31 80 L69 80 L68 104 Q67 112 58 112 L42 112 Q33 112 32 104 Z"/>
+  <path ${cls("c")} style="fill:${f("c")};fill-opacity:${o("c")}" d="M28 52 Q30 46 40 45 L60 45 Q70 46 72 52 L69 80 L31 80 Z"/>
+  <rect ${cls("t")} style="fill:${f("t")};fill-opacity:${o("t")}" x="43" y="33" width="14" height="13" rx="4"/>
+  <circle ${cls("h")} style="fill:${f("h")};fill-opacity:${o("h")}" cx="50" cy="19" r="14"/>
+  </g></svg>`;
+}
+const fc=k=>FAM[k].h;
+const tint=(hex,a)=>{const n=parseInt(hex.slice(1),16);return `rgba(${n>>16},${(n>>8)&255},${n&255},${a})`};
+const dots=(d,col)=>`<span class="dots">${[1,2,3,4,5].map(i=>`<i style="${i<=d?`background:${col}`:""}"></i>`).join("")}</span>`;
+const slug=s=>"e-"+[...s].map(c=>c.charCodeAt(0).toString(36)).join("");
+
+// legends
+document.getElementById("famLegend").innerHTML=Object.entries(FAM).map(([k,v])=>`<div class="row"><span class="sw" style="background:${v.h}"></span>${v.n}</div>`).join("");
+document.getElementById("degLegend").innerHTML=[1,2,3,4,5].map(i=>`<div class="row">${dots(i,"var(--ink)")}<span><b>${i}</b> - ${DEG[i]}</span></div>`).join("")+
+ `<div class="row" style="margin-top:8px">${Object.entries(TYPE).map(([k,v])=>`<span class="tag">${v.i} ${v.n}</span>`).join(" ")}</div>`;
+
+// pairs
+const word=n=>{const e=BY[n];return `<div class="side" data-go="${n}" style="background:${tint(fc(e.fam),.12)};color:${fc(e.fam)}">${n}</div>`};
+const AX=[["Радость","Грусть","хорошо ↔ плохо"],["Доверие","Отвращение","принять ↔ отвергнуть"],["Страх","Гнев","бежать ↔ нападать"],["Удивление","Предвкушение","неожиданное ↔ ожидаемое"]];
+document.getElementById("axes").innerHTML=AX.map(p=>`<div class="pairwrap"><div class="pair">${word(p[0])}<span class="vs">↔</span>${word(p[1])}</div><div class="note">${p[2]}</div></div>`).join("");
+const PR=[["Любовь","Ненависть"],["Гордость","Стыд"],["Надежда","Отчаяние"],["Интерес","Скука"],["Спокойствие","Тревога"],["Благодарность","Обида"],["Уверенность","Растерянность"],["Уважение","Презрение"],["Симпатия","Антипатия"],["Энтузиазм","Апатия"],["Восторг","Разочарование"],["Сочувствие","Злорадство"],["Испуг","Облегчение"],["Торжество","Унижение"],["Эйфория","Опустошённость"],["Ностальгия","Предвкушение"]];
+document.getElementById("pairs").innerHTML=PR.map(p=>`<div class="pair">${word(p[0])}<span class="vs">↔</span>${word(p[1])}</div>`).join("");
+
+// ladders
+document.getElementById("ladders").innerHTML=Object.entries(FAM).map(([k,v])=>{
+  const items=D.filter(e=>e.fam===k);
+  return `<div class="ladder"><div class="lh"><span class="sw" style="background:${v.h}"></span>${v.n}</div><div class="steps5">${[1,2,3,4,5].map(d=>{
+    const ws=items.filter(e=>e.deg===d);
+    return `<div class="lvl" style="background:${tint(v.h,.06+d*.05)}"><div class="ln">${d} · ${DEG[d]}</div>${ws.length?ws.map(e=>`<span data-go="${e.name}">${e.name}</span>`).join(" "):'<span style="opacity:.35;text-decoration:none;cursor:default">-</span>'}</div>`}).join("")}</div></div>`}).join("");
+
+// body explorer
+const big=document.getElementById("bigBody");
+big.innerHTML=bodySVG({},90,true);
+big.querySelector("svg").setAttribute("width","150");big.querySelector("svg").setAttribute("height","300");
+big.addEventListener("click",ev=>{
+  const t=ev.target.closest(".z");if(!t)return;
+  const k=t.dataset.z;haptic();
+  big.querySelectorAll(".z").forEach(p=>p.classList.toggle("sel",p.dataset.z===k));
+  const hot=D.filter(e=>e.z[k]==="+"), cold=D.filter(e=>e.z[k]==="-");
+  const lst=a=>a.sort((x,y)=>x.fam.localeCompare(y.fam)||x.deg-y.deg).map(e=>`<span data-go="${e.name}" style="background:${tint(fc(e.fam),.12)};color:${fc(e.fam)}">${e.name}</span>`).join("");
+  document.getElementById("zoneBox").innerHTML=`<h4>${ZN[k]}</h4>
+   <div class="row"><span class="sw" style="background:var(--hot)"></span><b>Усиливается</b> (жар, напряжение, ком, энергия) - ${hot.length}</div><div class="zlist">${lst(hot)||"-"}</div>
+   ${cold.length?`<div class="row" style="margin-top:12px"><span class="sw" style="background:var(--cold)"></span><b>Ослабевает</b> (холод, тяжесть, пустота) - ${cold.length}</div><div class="zlist">${lst(cold)}</div>`:""}
+   <div style="margin-top:12px;font-size:12.5px;color:var(--muted)">Нажми на слово - откроется карточка.</div>`;
+});
+
+// filters
+let fFam=null,fType=null,q="";
+const famC=document.getElementById("famChips"),typeC=document.getElementById("typeChips");
+famC.innerHTML=`<button class="chip on" data-f="">Все</button>`+Object.entries(FAM).map(([k,v])=>`<button class="chip" data-f="${k}"><span class="sw" style="background:${v.h}"></span>${v.n}</button>`).join("");
+typeC.innerHTML=`<button class="chip on" data-t="">Все</button>`+Object.entries(TYPE).map(([k,v])=>`<button class="chip" data-t="${k}">${v.i} ${v.n}</button>`).join("");
+famC.onclick=e=>{const b=e.target.closest(".chip");if(!b)return;fFam=b.dataset.f||null;famC.querySelectorAll(".chip").forEach(c=>c.classList.toggle("on",c===b));render()};
+typeC.onclick=e=>{const b=e.target.closest(".chip");if(!b)return;fType=b.dataset.t||null;typeC.querySelectorAll(".chip").forEach(c=>c.classList.toggle("on",c===b));render()};
+document.getElementById("q").addEventListener("input",e=>{q=e.target.value.trim().toLowerCase();render()});
+
+const ABC="АБВГДЕЖЗИКЛМНОПРСТУФХЦЧШЭЮЯ".split("");
+function card(e){
+  const col=fc(e.fam), o=BY[e.opp], oc=o?fc(o.fam):"#999";
+  const zt=Object.entries(e.z).map(([k,v])=>`${ZN[k].split(" ")[0].toLowerCase()}`);
+  return `<article class="card" id="${slug(e.name)}" style="--fc:${col};--fcl:${tint(col,.12)};--oc:${oc}">
+   <div>
+    <h3>${e.name}</h3>
+    <div class="tags"><span class="tag fam">${FAM[e.fam].n}</span><span class="tag">${TYPE[e.type].i} ${TYPE[e.type].n}</span></div>
+    <div class="deg">${dots(e.deg,col)}<span>сила ${e.deg} из 5 · ${DEG[e.deg]}</span></div>
+    <p class="desc">${e.desc}</p>
+    <p class="body"><b>В теле:</b> ${e.body}</p>
+    <div class="opp">↔ Противоположность: <a data-go="${e.opp}">${e.opp}</a></div>
+   </div>
+   <div class="fig">${bodySVG(e.z,56)}</div>
+  </article>`;
+}
+function filtered(){
+  return D.filter(e=>(!fFam||e.fam===fFam)&&(!fType||e.type===fType)&&
+   (!q||(e.name+" "+e.desc+" "+e.body+" "+e.opp+" "+FAM[e.fam].n).toLowerCase().includes(q)));
+}
+function render(){
+  const items=filtered().sort((a,b)=>a.name.localeCompare(b.name,"ru"));
+  const groups={};items.forEach(e=>{const l=e.name[0].toUpperCase();(groups[l]=groups[l]||[]).push(e)});
+  document.getElementById("count").textContent=`Показано: ${items.length} из ${D.length}`;
+  document.getElementById("list").innerHTML=items.length?Object.keys(groups).map(l=>`<div class="letter" id="L-${ABC.indexOf(l)}">${l}</div><div class="grid">${groups[l].map(card).join("")}</div>`).join(""):`<div class="empty">Ничего не нашлось. Попробуй другое слово, например «грудь» или «жар».</div>`;
+  document.getElementById("abc").innerHTML=ABC.map((l,i)=>`<button ${groups[l]?"":"disabled"} data-l="${i}">${l}</button>`).join("");
+}
+document.getElementById("abc").onclick=e=>{const b=e.target.closest("button");if(!b||b.disabled)return;document.getElementById("L-"+b.dataset.l).scrollIntoView({behavior:"smooth",block:"start"})};
+
+function go(name){
+  if(!BY[name])return;
+  haptic();
+  if(!filtered().some(e=>e.name===name)){
+    fFam=null;fType=null;q="";document.getElementById("q").value="";
+    famC.querySelectorAll(".chip").forEach((c,i)=>c.classList.toggle("on",i===0));
+    typeC.querySelectorAll(".chip").forEach((c,i)=>c.classList.toggle("on",i===0));
+    render();
+  }
+  const el=document.getElementById(slug(name));
+  el.scrollIntoView({behavior:"smooth",block:"center"});
+  el.classList.remove("flash");void el.offsetWidth;el.classList.add("flash");
+  setTimeout(()=>el.classList.remove("flash"),1800);
+}
+document.addEventListener("click",e=>{const t=e.target.closest("[data-go]");if(t){e.preventDefault();go(t.dataset.go)}});
+render();
+</script>
+</body>
+</html>
