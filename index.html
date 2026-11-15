@@ -150,13 +150,25 @@ h3.mini{font-size:16px;margin:20px 0 10px}
 .wpanel a{color:var(--ink);font-weight:700;cursor:pointer;border-bottom:2px solid var(--line)}
 .wbtn{display:inline-block;margin-top:10px;border:1px solid var(--line);background:var(--soft);color:var(--ink);border-radius:999px;padding:7px 14px;font:inherit;font-size:13.5px;font-weight:700;cursor:pointer}
 .tabbar{position:fixed;left:0;right:0;bottom:0;z-index:20;background:var(--bgA);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);border-top:1px solid var(--line);padding:6px 4px calc(6px + var(--tg-safe-area-inset-bottom, env(safe-area-inset-bottom, 0px)))}
-.tabbar .in{max-width:980px;margin:0 auto;display:grid;grid-template-columns:repeat(6,1fr);gap:2px}
-.tabbar button{border:0;background:transparent;color:var(--muted);font:inherit;font-size:10.5px;font-weight:700;display:flex;flex-direction:column;align-items:center;gap:2px;padding:5px 0;border-radius:10px;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.tabbar .in{max-width:980px;margin:0 auto;display:grid;grid-template-columns:repeat(7,1fr);gap:2px}
+.tabbar button{border:0;background:transparent;color:var(--muted);font:inherit;font-size:10px;font-weight:700;display:flex;flex-direction:column;align-items:center;gap:2px;padding:5px 0;border-radius:10px;cursor:pointer;-webkit-tap-highlight-color:transparent}
 .tabbar button .ic{font-size:19px;line-height:1;filter:grayscale(1);opacity:.75;transition:.15s}
 .tabbar button.on{color:var(--ink);background:var(--soft)}
 .tabbar button.on .ic{filter:none;opacity:1}
 body{padding-bottom:calc(72px + var(--tg-safe-area-inset-bottom, env(safe-area-inset-bottom, 0px)))}
 section[id]{scroll-margin-top:8px}
+.fchips{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0 4px}
+.fchip{border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:999px;padding:6px 12px;font:inherit;font-size:13.5px;font-weight:600;cursor:pointer}
+.fchip.on{color:#fff;border-color:transparent}
+.fdet{margin-top:12px;padding-top:12px;border-top:1px dashed var(--line)}
+.fdet h4{margin:0 0 4px;font-size:18px}
+.comp{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0 10px}
+.comp span{font-size:13px;font-weight:700;padding:4px 10px;border-radius:999px;cursor:pointer}
+.comp span.plain{background:var(--soft);color:var(--ink);cursor:default}
+.flab{font-size:12px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.04em;margin-top:8px}
+.fwz{cursor:pointer;stroke:var(--card);stroke-width:3;transition:opacity .15s}
+.fwz:hover{opacity:.85}
+.fwz.sel{stroke:var(--ink)}
 footer{padding:30px 0 60px;color:var(--muted);font-size:13px;border-top:1px solid var(--line);margin-top:30px}
 footer a{color:var(--muted)}
 </style>
@@ -171,6 +183,7 @@ footer a{color:var(--muted)}
     <a href="#raznica">Эмоция или чувство?</a>
     <a href="#telo">Ищу по телу</a>
     <a href="#koleso">Колесо эмоций</a>
+    <a href="#chuvstva">Карта чувств</a>
     <a href="#pary">Противоположности</a>
     <a href="#lestnicy">Лестницы силы</a>
     <a href="#alfavit">Алфавит</a>
@@ -260,6 +273,15 @@ footer a{color:var(--muted)}
   </div>
 </section>
 
+<section id="chuvstva">
+  <h2>Карта чувств</h2>
+  <p class="sub">Чувство - это отношение к чему-то. Поэтому чувства удобно делить по тому, на что они направлены: на людей, на себя, на дело и так далее. Каждое чувство собрано из нескольких эмоций: например, любовь включает радость, нежность и беспокойство за человека. Нажми на часть колеса.</p>
+  <div class="wheelwrap">
+    <div class="wheel" id="fwheel"></div>
+    <div class="wpanel" id="fpanel"></div>
+  </div>
+</section>
+
 <section id="pary">
   <h2>Противоположные эмоции и чувства</h2>
   <p class="sub">Четыре главные оси из «колеса эмоций» психолога Роберта Плутчика - и пары, понятные в быту.</p>
@@ -304,6 +326,7 @@ footer a{color:var(--muted)}
   <button data-tab="raznica"><span class="ic">💡</span>Разница</button>
   <button data-tab="telo"><span class="ic">🧍</span>Тело</button>
   <button data-tab="koleso"><span class="ic">🎡</span>Колесо</button>
+  <button data-tab="chuvstva"><span class="ic">🧭</span>Чувства</button>
   <button data-tab="pary"><span class="ic">↔️</span>Пары</button>
   <button data-tab="lestnicy"><span class="ic">📶</span>Сила</button>
   <button data-tab="alfavit"><span class="ic">🔤</span>Алфавит</button>
@@ -623,7 +646,7 @@ document.addEventListener("click",ev=>{
  else if(d){wheelSelect("d",+d.dataset.d);(typeof haptic==="function")&&haptic()}
 });
 // ===== Нижняя панель разделов =====
-const TABS=["raznica","telo","koleso","pary","lestnicy","alfavit"];
+const TABS=["raznica","telo","koleso","chuvstva","pary","lestnicy","alfavit"];
 const tabBtns=[...document.querySelectorAll("#tabbar button")];
 document.getElementById("tabbar").addEventListener("click",e=>{
  const b=e.target.closest("button");if(!b)return;
@@ -638,6 +661,109 @@ function markTab(){
 let tabTick=false;
 window.addEventListener("scroll",()=>{if(!tabTick){tabTick=true;requestAnimationFrame(()=>{markTab();tabTick=false})}},{passive:true});
 markTab();
+// ===== Карта чувств =====
+const FG=[
+ {k:"people",n:"Люди",t:"Чувства к людям",i:"👥",c:"#e0607e",d:"Как я отношусь к другим людям."},
+ {k:"self",n:"Я сам",t:"Чувства к себе",i:"🪞",c:"#b8673e",d:"Как я отношусь к себе."},
+ {k:"work",n:"Дело",t:"Чувства к делу",i:"🛠️",c:"#1e9e8f",d:"Что я чувствую к работе, занятию, цели."},
+ {k:"moral",n:"Совесть",t:"Нравственные чувства",i:"⚖️",c:"#7b5bc4",d:"Что правильно, а что нет: совесть, долг, справедливость."},
+ {k:"mind",n:"Знания",t:"Чувства познания",i:"🧠",c:"#3b7dd8",d:"Что я чувствую, когда узнаю, думаю, ищу ответ."},
+ {k:"beauty",n:"Красота",t:"Чувства красоты",i:"🎨",c:"#d9910f",d:"Красота, величие, трогательное и смешное."},
+ {k:"life",n:"Жизнь",t:"Чувства к жизни",i:"🌅",c:"#4f9a5f",d:"Как я чувствую жизнь и мир в целом."}];
+// [название, группа, из каких эмоций, противоположность, описание (если нет в алфавите)]
+const FD=[
+ ["Любовь","people",["Радость","Нежность","Восхищение","Беспокойство","Тоска"],"Ненависть"],
+ ["Доверие","people",["Спокойствие","Безмятежность","Благодарность"],"Подозрительность"],
+ ["Уважение","people",["Восхищение","Интерес","Спокойствие"],"Презрение"],
+ ["Благодарность","people",["Радость","Облегчение","Нежность"],"Обида"],
+ ["Сочувствие","people",["Грусть","Нежность","Жалость"],"Злорадство"],
+ ["Ревность","people",["Страх","Гнев","Обида","Тревога"],"Доверие"],
+ ["Зависть","people",["Грусть","Злость","Досада"],"Восхищение"],
+ ["Обида","people",["Грусть","Злость","Разочарование"],"Благодарность"],
+ ["Презрение","people",["Отвращение","Гнев","Гордость"],"Уважение"],
+ ["Ненависть","people",["Гнев","Отвращение","Злорадство"],"Любовь"],
+ ["Самоуважение","self",["Спокойствие","Гордость","Уверенность"],"Жалость к себе","Устойчивое ощущение «я ценен и достоин уважения», не зависящее от похвалы."],
+ ["Гордость","self",["Радость","Торжество","Удовлетворение"],"Стыд"],
+ ["Уверенность","self",["Спокойствие","Кураж","Удовлетворение"],"Неуверенность в себе"],
+ ["Неуверенность в себе","self",["Беспокойство","Смущение","Растерянность"],"Уверенность","Постоянное сомнение: «а вдруг я не справлюсь, я хуже других»."],
+ ["Стыд","self",["Страх","Отвращение","Смущение"],"Гордость"],
+ ["Вина","self",["Грусть","Страх","Раскаяние"],"Гордость"],
+ ["Жалость к себе","self",["Грусть","Обида","Апатия"],"Самоуважение","«Бедный я»: сочувствие к себе, которое мешает действовать."],
+ ["Увлечённость","work",["Интерес","Радость","Азарт"],"Скука","Дело захватывает, время летит незаметно."],
+ ["Интерес","work",["Любопытство","Предвкушение"],"Скука"],
+ ["Вдохновение","work",["Восторг","Интерес","Энтузиазм"],"Опустошённость"],
+ ["Энтузиазм","work",["Радость","Предвкушение","Кураж"],"Апатия"],
+ ["Удовлетворение","work",["Радость","Облегчение","Гордость"],"Разочарование"],
+ ["Скука","work",["Апатия","Раздражение"],"Увлечённость"],
+ ["Фрустрация","work",["Гнев","Разочарование","Отчаяние"],"Удовлетворение"],
+ ["Апатия","work",["Грусть","Опустошённость"],"Энтузиазм"],
+ ["Совесть","moral",["Вина","Стыд","Тревога"],null,"Внутренний голос: «так правильно, а так нельзя». Мучает, когда поступаешь против себя."],
+ ["Долг","moral",["Уважение","Тревога","Уверенность"],null,"Чувство «я должен», даже когда не хочется."],
+ ["Справедливость","moral",["Удовлетворение","Возмущение","Негодование"],null,"Чувство, что всё должно быть по-честному. Радует, когда соблюдено, и злит, когда нарушено."],
+ ["Ответственность","moral",["Тревога","Уверенность","Гордость"],null,"Готовность отвечать за свои поступки и за тех, кто от тебя зависит."],
+ ["Возмущение","moral",["Гнев","Отвращение"],"Благодарность"],
+ ["Негодование","moral",["Гнев","Презрение"],"Благодарность"],
+ ["Раскаяние","moral",["Вина","Грусть","Стыд"],"Гордость"],
+ ["Любопытство","mind",["Интерес","Предвкушение"],"Апатия"],
+ ["Удивление","mind",["Интерес","Растерянность"],"Скука"],
+ ["Сомнение","mind",["Беспокойство","Подозрительность","Интерес"],"Убеждённость","Не уверен, правда ли это, хочется проверить."],
+ ["Убеждённость","mind",["Уверенность","Спокойствие"],"Сомнение","Уверенность, что знаешь, как на самом деле."],
+ ["Озарение","mind",["Удивление","Радость","Восторг"],"Растерянность","Внезапное «ага, понял!»: всё сложилось."],
+ ["Растерянность","mind",["Замешательство","Тревога"],"Уверенность"],
+ ["Восхищение","beauty",["Радость","Изумление","Уважение"],"Презрение"],
+ ["Умиление","beauty",["Нежность","Радость"],"Брезгливость"],
+ ["Трепет","beauty",["Восхищение","Страх","Изумление"],null,"Благоговение перед чем-то огромным и прекрасным: океан, горы, музыка."],
+ ["Чувство смешного","beauty",["Веселье","Удивление"],null,"Видишь нелепость и не можешь не улыбнуться."],
+ ["Ностальгия","beauty",["Грусть","Радость","Нежность"],"Предвкушение"],
+ ["Брезгливость","beauty",["Отвращение"],"Умиление"],
+ ["Счастье","life",["Радость","Безмятежность","Благодарность"],"Горе"],
+ ["Надежда","life",["Предвкушение","Тревога","Радость"],"Отчаяние"],
+ ["Смысл","life",["Удовлетворение","Вдохновение","Спокойствие"],"Опустошённость","Ощущение, что жизнь и твои дела имеют значение."],
+ ["Безмятежность","life",["Спокойствие","Доверие"],"Тревога"],
+ ["Одиночество","life",["Грусть","Тоска","Страх"],"Привязанность"],
+ ["Тоска","life",["Грусть","Ностальгия","Одиночество"],"Радость"]
+].map(r=>({name:r[0],g:r[1],comp:r[2],opp:r[3],desc:r[4]}));
+const FBY={};FD.forEach(f=>FBY[f.name+"|"+f.g]=f);
+let fSel=0;
+function drawFeelWheel(){
+ const C=200,n=FG.length,step=360/n,P=(r,a)=>[C+r*Math.cos((a-90)*Math.PI/180),C+r*Math.sin((a-90)*Math.PI/180)];
+ const sec=(r1,r2,a1,a2)=>{const [x1,y1]=P(r2,a1),[x2,y2]=P(r2,a2),[x3,y3]=P(r1,a2),[x4,y4]=P(r1,a1);return `M${x1.toFixed(1)} ${y1.toFixed(1)} A${r2} ${r2} 0 0 1 ${x2.toFixed(1)} ${y2.toFixed(1)} L${x3.toFixed(1)} ${y3.toFixed(1)} A${r1} ${r1} 0 0 0 ${x4.toFixed(1)} ${y4.toFixed(1)}Z`};
+ let g="";
+ FG.forEach((G,i)=>{const a=i*step,cnt=FD.filter(f=>f.g===G.k).length;
+  g+=`<path class="fwz" data-fg="${i}" d="${sec(58,196,a-step/2+1.2,a+step/2-1.2)}" style="fill:${G.c};fill-opacity:${i===fSel?1:.82}"/>`;
+  const [mx,my]=P(128,a);
+  g+=`<text x="${mx.toFixed(1)}" y="${(my-10).toFixed(1)}" font-size="24" text-anchor="middle" style="pointer-events:none">${G.i}</text>`;
+  g+=`<text x="${mx.toFixed(1)}" y="${(my+12).toFixed(1)}" font-size="14.5" font-weight="800" text-anchor="middle" style="fill:#fff;pointer-events:none">${G.n}</text>`;
+  g+=`<text x="${mx.toFixed(1)}" y="${(my+27).toFixed(1)}" font-size="10.5" font-weight="600" text-anchor="middle" style="fill:rgba(255,255,255,.85);pointer-events:none">${cnt} чувств</text>`;});
+ g+=`<circle cx="${C}" cy="${C}" r="52" style="fill:var(--card);stroke:var(--line)" stroke-width="2"/><text x="${C}" y="${C+8}" font-size="24" font-weight="800" text-anchor="middle" style="fill:var(--ink)">Я</text>`;
+ document.getElementById("fwheel").innerHTML=`<svg viewBox="0 0 400 400" role="img" aria-label="Карта чувств">${g}</svg>`;
+ document.querySelector(`#fwheel [data-fg="${fSel}"]`).classList.add("sel");
+}
+function compChip(n){const e=BY[n];return e?`<span data-go="${n}" style="background:${tint(fc(e.fam),.14)};color:${fc(e.fam)}">${n}</span>`:`<span class="plain">${n}</span>`}
+function feelGroup(i,keepName){
+ fSel=i;drawFeelWheel();const G=FG[i],items=FD.filter(f=>f.g===G.k);
+ document.getElementById("fpanel").innerHTML=`<h4>${G.i} ${G.t}</h4><div style="color:var(--muted);font-size:14px">${G.d}</div>
+  <div class="fchips">${items.map(f=>`<button class="fchip" data-fn="${f.name}" data-fgi="${i}">${f.name}</button>`).join("")}</div><div id="fdet"></div>`;
+ feelDetail(i,keepName||items[0].name,false);
+}
+function feelDetail(i,name,scroll){
+ const G=FG[i],f=FBY[name+"|"+G.k];if(!f)return;const e=BY[name];
+ document.querySelectorAll("#fpanel .fchip").forEach(b=>{const on=b.dataset.fn===name;b.classList.toggle("on",on);b.style.background=on?G.c:""});
+ const oppHtml=f.opp?`<div class="opp">↔ Противоположное: ${BY[f.opp]?`<a data-go="${f.opp}">${f.opp}</a>`:`<b>${f.opp}</b>`}</div>`:"";
+ document.getElementById("fdet").innerHTML=`<div class="fdet"><h4>${name}</h4>
+  <p style="margin:2px 0 6px;font-size:14.5px">${e?e.desc:f.desc||""}</p>
+  ${e?`<p class="body"><b>В теле:</b> ${e.body}</p>`:""}
+  <div class="flab">Из каких эмоций складывается</div><div class="comp">${f.comp.map(compChip).join("")}</div>
+  ${oppHtml}
+  ${e?`<button class="wbtn" data-go="${name}">Открыть карточку →</button>`:""}</div>`;
+ if(scroll)document.getElementById("fdet").scrollIntoView({behavior:"smooth",block:"nearest"});
+}
+feelGroup(0);
+document.addEventListener("click",ev=>{
+ const s=ev.target.closest("[data-fg]"),c=ev.target.closest("[data-fn]");
+ if(s){feelGroup(+s.dataset.fg);(typeof haptic==="function")&&haptic();document.getElementById("fpanel").scrollIntoView({behavior:"smooth",block:"nearest"})}
+ else if(c){feelDetail(+c.dataset.fgi,c.dataset.fn,true);(typeof haptic==="function")&&haptic()}
+});
 render();
 </script>
 </body>
