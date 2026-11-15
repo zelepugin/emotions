@@ -169,6 +169,9 @@ section[id]{scroll-margin-top:8px}
 .fwz{cursor:pointer;stroke:var(--card);stroke-width:3;transition:opacity .15s}
 .fwz:hover{opacity:.85}
 .fwz.sel{stroke:var(--ink)}
+.backbtn{position:fixed;right:16px;bottom:calc(84px + var(--tg-safe-area-inset-bottom, env(safe-area-inset-bottom, 0px)));z-index:25;width:50px;height:50px;border-radius:50%;border:1px solid var(--line);background:var(--card);color:var(--ink);box-shadow:0 4px 16px rgba(0,0,0,.18);font:inherit;font-size:22px;font-weight:800;display:flex;align-items:center;justify-content:center;cursor:pointer;opacity:0;transform:scale(.7);pointer-events:none;transition:opacity .2s,transform .2s;-webkit-tap-highlight-color:transparent}
+.backbtn.show{opacity:1;transform:scale(1);pointer-events:auto}
+.backbtn .cnt{position:absolute;top:-4px;right:-4px;min-width:20px;height:20px;border-radius:10px;background:var(--chipOn,#1f1d1a);color:var(--chipOnText,#fff);font-size:11px;font-weight:800;display:flex;align-items:center;justify-content:center;padding:0 5px}
 footer{padding:30px 0 60px;color:var(--muted);font-size:13px;border-top:1px solid var(--line);margin-top:30px}
 footer a{color:var(--muted)}
 </style>
@@ -322,6 +325,7 @@ footer a{color:var(--muted)}
     Основано на: «колесо эмоций» Р. Плутчика (противоположности, семьи); исследование L. Nummenmaa и соавт. «Bodily maps of emotions», PNAS, 2014 (карты тела); разделение эмоций и чувств - традиция отечественной психологии (А. Н. Леонтьев, Е. П. Ильин). Классификация упрощена для понятности: границы между семьями и типами условны, а ощущения у разных людей отличаются. Если тяжёлые состояния (тревога, уныние, отчаяние) держатся неделями - это повод поговорить со специалистом.
   </footer>
 </div>
+<button class="backbtn" id="backBtn" aria-label="Вернуться туда, откуда перешёл"><span class="arr">↑</span><span class="cnt" style="display:none"></span></button>
 <nav class="tabbar" id="tabbar" aria-label="Разделы"><div class="in">
   <button data-tab="raznica"><span class="ic">💡</span>Разница</button>
   <button data-tab="telo"><span class="ic">🧍</span>Тело</button>
@@ -557,6 +561,7 @@ document.getElementById("abc").onclick=e=>{const b=e.target.closest("button");if
 
 function go(name){
   if(!BY[name])return;
+  backPush();
   haptic();
   if(!filtered().some(e=>e.name===name)){
     fFam=null;fType=null;q="";document.getElementById("q").value="";
@@ -764,6 +769,33 @@ document.addEventListener("click",ev=>{
  if(s){feelGroup(+s.dataset.fg);(typeof haptic==="function")&&haptic();document.getElementById("fpanel").scrollIntoView({behavior:"smooth",block:"nearest"})}
  else if(c){feelDetail(+c.dataset.fgi,c.dataset.fn,true);(typeof haptic==="function")&&haptic()}
 });
+// ===== Кнопка «вернуться назад» =====
+const backStack=[];let backIgnore=0;const backBtn=document.getElementById("backBtn");
+const tgOk=()=>typeof tg!=="undefined"&&tg&&typeof inTg!=="undefined"&&inTg;
+function backUpdate(){
+ const has=backStack.length>0;backBtn.classList.toggle("show",has);
+ if(has){const y=backStack[backStack.length-1];backBtn.querySelector(".arr").textContent=y<window.scrollY?"↑":"↓";
+  const c=backBtn.querySelector(".cnt");c.textContent=backStack.length;c.style.display=backStack.length>1?"":"none"}
+ try{if(tgOk())has?tg.BackButton.show():tg.BackButton.hide()}catch(e){}
+}
+function backPush(){
+ const y=window.scrollY,last=backStack[backStack.length-1];
+ if(last===undefined||Math.abs(last-y)>40)backStack.push(y);
+ if(backStack.length>20)backStack.shift();
+ backIgnore=Date.now()+1300;backUpdate();
+}
+function backGo(){
+ if(!backStack.length)return;const y=backStack.pop();
+ (typeof haptic==="function")&&haptic();
+ backIgnore=Date.now()+1300;window.scrollTo({top:y,behavior:"smooth"});backUpdate();
+}
+backBtn.addEventListener("click",backGo);
+try{if(tgOk())tg.BackButton.onClick(backGo)}catch(e){}
+window.addEventListener("scroll",()=>{
+ if(!backStack.length)return;
+ if(Date.now()>backIgnore&&Math.abs(window.scrollY-backStack[backStack.length-1])<80)backStack.pop();
+ backUpdate();
+},{passive:true});
 render();
 </script>
 </body>
