@@ -131,6 +131,24 @@ h3.mini{font-size:16px;margin:20px 0 10px}
 .zonebox h4{margin:0 0 6px;font-size:17px}
 .zlist{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
 .zlist span{font-size:13px;font-weight:600;padding:4px 10px;border-radius:999px;cursor:pointer;border:1px solid transparent}
+.wheelwrap{display:grid;grid-template-columns:minmax(0,460px) 1fr;gap:18px;align-items:start}
+@media (max-width:760px){.wheelwrap{grid-template-columns:1fr}}
+.wheel{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:8px}
+.wheel svg{display:block;width:100%;height:auto}
+.wheel .wz{cursor:pointer;stroke:var(--card);stroke-width:2;transition:opacity .15s}
+.wheel .wz:hover{opacity:.85}
+.wheel .wz.sel{stroke:var(--ink);stroke-width:3}
+.wheel text{pointer-events:none;font-family:Manrope,system-ui,sans-serif;font-weight:700}
+.wmix{font-size:12px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.04em;margin:8px 6px 6px}
+.wchips{display:flex;flex-wrap:wrap;gap:6px;padding:0 4px 6px}
+.wchip{display:inline-flex;align-items:center;gap:3px;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:999px;padding:5px 11px 5px 8px;font:inherit;font-size:13px;font-weight:600;cursor:pointer}
+.wchip .sw{width:9px;height:9px;border-radius:50%}
+.wchip.sel{background:var(--chipOn,#1f1d1a);color:var(--chipOnText,#fff);border-color:var(--chipOn,#1f1d1a)}
+.wpanel{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px}
+.wpanel h4{margin:0 0 6px;font-size:19px}
+.wpanel p{margin:6px 0 8px;font-size:14.5px}
+.wpanel a{color:var(--ink);font-weight:700;cursor:pointer;border-bottom:2px solid var(--line)}
+.wbtn{display:inline-block;margin-top:10px;border:1px solid var(--line);background:var(--soft);color:var(--ink);border-radius:999px;padding:7px 14px;font:inherit;font-size:13.5px;font-weight:700;cursor:pointer}
 footer{padding:30px 0 60px;color:var(--muted);font-size:13px;border-top:1px solid var(--line);margin-top:30px}
 footer a{color:var(--muted)}
 </style>
@@ -144,6 +162,7 @@ footer a{color:var(--muted)}
   <nav class="toc">
     <a href="#raznica">Эмоция или чувство?</a>
     <a href="#telo">Ищу по телу</a>
+    <a href="#koleso">Колесо эмоций</a>
     <a href="#pary">Противоположности</a>
     <a href="#lestnicy">Лестницы силы</a>
     <a href="#alfavit">Алфавит</a>
@@ -221,6 +240,15 @@ footer a{color:var(--muted)}
   <div class="explorer">
     <div class="bigbody" id="bigBody"></div>
     <div class="zonebox" id="zoneBox"><h4>Выбери часть тела</h4><div style="color:var(--muted);font-size:14px">Голова и лицо, горло, грудь, живот, руки или ноги.</div></div>
+  </div>
+</section>
+
+<section id="koleso">
+  <h2>Колесо эмоций</h2>
+  <p class="sub">Модель психолога Роберта Плутчика: 8 базовых эмоций. Чем ближе к центру, тем сильнее. Напротив друг друга - противоположности. Под колесом - смеси соседних эмоций, например радость + доверие = любовь. Нажми на любую часть.</p>
+  <div class="wheelwrap">
+    <div class="wheel" id="wheel"></div>
+    <div class="wpanel" id="wpanel"><h4>Выбери часть колеса</h4><div style="color:var(--muted);font-size:14px">Центр - сильные эмоции, середина - базовые, край - слабые. Кнопки под колесом - смеси двух соседних эмоций.</div></div>
   </div>
 </section>
 
@@ -503,6 +531,81 @@ function go(name){
   setTimeout(()=>el.classList.remove("flash"),1800);
 }
 document.addEventListener("click",e=>{const t=e.target.closest("[data-go]");if(t){e.preventDefault();go(t.dataset.go)}});
+// ===== Колесо Плутчика =====
+const PL=[
+ {c:"#f5c518",t:"#3a2e00",w:["Безмятежность","Радость","Экстаз"]},
+ {c:"#8bc34a",t:"#1f3300",w:["Принятие","Доверие","Восхищение"]},
+ {c:"#2e9d55",t:"#ffffff",w:["Опасение","Страх","Ужас"]},
+ {c:"#26a6c9",t:"#ffffff",w:["Рассеянность","Удивление","Изумление"]},
+ {c:"#3b6fd6",t:"#ffffff",w:["Задумчивость","Грусть","Горе"]},
+ {c:"#8e5bc4",t:"#ffffff",w:["Скука","Отвращение","Омерзение"]},
+ {c:"#e04848",t:"#ffffff",w:["Раздражение","Гнев","Ярость"]},
+ {c:"#f08c2a",t:"#3a1d00",w:["Интерес","Предвкушение","Настороженность"]}];
+const DY=["Любовь","Покорность","Трепет","Неодобрение","Раскаяние","Презрение","Агрессивность","Оптимизм"];
+const WX={
+ "Экстаз":["Пик радости: переполняет счастье.","Восторг"],
+ "Принятие":["Спокойно принимаешь человека или ситуацию как есть.","Доверие"],
+ "Опасение":["Лёгкий страх: настороженно ждёшь неприятного.","Беспокойство"],
+ "Рассеянность":["Самое слабое удивление: внимание сбилось, «что-что?».","Растерянность"],
+ "Задумчивость":["Самая лёгкая грусть: уходишь в свои мысли.","Меланхолия"],
+ "Омерзение":["Предельное отвращение: невозможно находиться рядом.","Отвращение"],
+ "Настороженность":["Предельное ожидание: весь внимание, начеку.","Предвкушение"],
+ "Покорность":["Готовность уступить, подчиниться более сильному.",null],
+ "Трепет":["Благоговейный страх перед чем-то огромным и непонятным.",null],
+ "Неодобрение":["Неприятно удивлён: «так не должно было быть».",null],
+ "Агрессивность":["Напор и готовность нападать ради цели.","Гнев"],
+ "Оптимизм":["Ждёшь хорошего будущего и веришь в него.","Надежда"]};
+const RING=[{r1:145,r2:198,op:.42,fs:12,n:"слабая",sp:13},{r1:90,r2:145,op:.75,fs:12.5,n:"базовая",sp:99},{r1:32,r2:90,op:1,fs:10.5,n:"сильная",sp:7}];
+const C0=200,rad=a=>(a-90)*Math.PI/180,pt=(r,a)=>[C0+r*Math.cos(rad(a)),C0+r*Math.sin(rad(a))];
+function sector(r1,r2,a1,a2){const [x1,y1]=pt(r2,a1),[x2,y2]=pt(r2,a2),[x3,y3]=pt(r1,a2),[x4,y4]=pt(r1,a1);
+ return `M${x1.toFixed(1)} ${y1.toFixed(1)} A${r2} ${r2} 0 0 1 ${x2.toFixed(1)} ${y2.toFixed(1)} L${x3.toFixed(1)} ${y3.toFixed(1)} A${r1} ${r1} 0 0 0 ${x4.toFixed(1)} ${y4.toFixed(1)}Z`}
+const HY={"Раздражение":["Раздра-","жение"],"Опасение":["Опасе-","ние"],"Настороженность":["Насторо-","женность"],"Восхищение":["Восхи-","щение"],"Изумление":["Изум-","ление"],"Омерзение":["Омер-","зение"]};
+function label(txt,x,y,fs,fill,sp){
+ const lines=txt.length>(sp||99)?(HY[txt]||[txt.slice(0,Math.ceil(txt.length/2))+"-",txt.slice(Math.ceil(txt.length/2))]):[txt];
+ const dy=fs*1.15;const y0=y-(lines.length-1)*dy/2+fs*.35;
+ return `<text x="${x.toFixed(1)}" y="${y0.toFixed(1)}" font-size="${fs}" text-anchor="middle" style="fill:${fill}">${lines.map((l,i)=>`<tspan x="${x.toFixed(1)}" dy="${i?dy:0}">${l}</tspan>`).join("")}</text>`}
+function drawWheel(){
+ let g="";
+ PL.forEach((p,i)=>{const a=i*45;RING.forEach((R,ri)=>{
+   g+=`<path class="wz" data-w="${i},${ri}" d="${sector(R.r1,R.r2,a-21,a+21)}" style="fill:${p.c};fill-opacity:${R.op}"/>`;
+   const [x,y]=pt((R.r1+R.r2)/2,a);g+=label(p.w[ri],x,y,R.fs,ri===2?p.t:"var(--ink)",(i===2||i===6)&&ri===0?7:R.sp);
+ })});
+ g+=`<circle cx="${C0}" cy="${C0}" r="28" style="fill:var(--card)"/>`;
+ const chips=DY.map((d,i)=>`<button class="wchip" data-d="${i}"><span class="sw" style="background:${PL[i].c}"></span><span class="sw" style="background:${PL[(i+1)%8].c}"></span>${d}</button>`).join("");
+ document.getElementById("wheel").innerHTML=`<svg viewBox="0 0 400 400" role="img" aria-label="Колесо эмоций Плутчика">${g}</svg><div class="wmix">Смеси соседних эмоций:</div><div class="wchips">${chips}</div>`;
+}
+drawWheel();
+const wlink=n=>BY[n]?`<a data-go="${n}">${n}</a>`:`<b>${n}</b>`;
+function wheelSelect(kind,i,ri){
+ const svg=document.querySelector("#wheel svg");
+ document.querySelectorAll("#wheel .sel").forEach(e=>e.classList.remove("sel"));
+ let html="";
+ if(kind==="w"){
+  svg.querySelector(`[data-w="${i},${ri}"]`).classList.add("sel");
+  const p=PL[i],name=p.w[ri],oi=(i+4)%8,opp=PL[oi].w[ri];
+  const e=BY[name],x=WX[name];
+  html=`<h4>${name}</h4>
+   <div class="row"><span class="sw" style="background:${p.c}"></span><span>Лепесток «${p.w[1]}» · сила: <b>${RING[ri].n}</b></span></div>
+   <p>${e?e.desc:(x?x[0]:"")}</p>
+   ${e?`<p class="body"><b>В теле:</b> ${e.body}</p>`:""}
+   <div class="opp">↔ Напротив в колесе: <a data-w="${oi},${ri}">${opp}</a></div>
+   ${e?`<button class="wbtn" data-go="${name}">Открыть карточку →</button>`:(x&&x[1]?`<div class="opp" style="margin-top:8px">Похоже в алфавите: ${wlink(x[1])}</div>`:"")}`;
+ }else{
+  document.querySelector(`#wheel [data-d="${i}"]`).classList.add("sel");
+  const d=DY[i],a=PL[i].w[1],b=PL[(i+1)%8].w[1],od=DY[(i+4)%8],e=BY[d],x=WX[d];
+  html=`<h4>${d}</h4>
+   <div class="row"><span class="sw" style="background:${PL[i].c}"></span><span><b>${a}</b> + </span><span class="sw" style="background:${PL[(i+1)%8].c}"></span><span><b>${b}</b></span></div>
+   <p>${e?e.desc:(x?x[0]:"")}</p>
+   <div class="opp">↔ Напротив в колесе: <a data-d="${(i+4)%8}">${od}</a></div>
+   ${e?`<button class="wbtn" data-go="${d}">Открыть карточку →</button>`:(x&&x[1]?`<div class="opp" style="margin-top:8px">Похоже в алфавите: ${wlink(x[1])}</div>`:"")}`;
+ }
+ document.getElementById("wpanel").innerHTML=html;
+}
+document.addEventListener("click",ev=>{
+ const w=ev.target.closest("[data-w]"),d=ev.target.closest("[data-d]");
+ if(w){const [i,ri]=w.dataset.w.split(",").map(Number);wheelSelect("w",i,ri);(typeof haptic==="function")&&haptic();if(w.tagName==="A")document.getElementById("wpanel").scrollIntoView({behavior:"smooth",block:"nearest"})}
+ else if(d){wheelSelect("d",+d.dataset.d);(typeof haptic==="function")&&haptic()}
+});
 render();
 </script>
 </body>
